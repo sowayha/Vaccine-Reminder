@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Vaccine Reminder
-Description: This plugin allows users to input their vaccine date, automatically generates an ICS file with 6 events to reminder (Android & IOS).
+Description: This plugin allows users to input their vaccine date, automatically generates an ICS file for the next scheduled vaccine, and seamlessly integrates it into the user's calendar. The plugin also includes a built-in reminder system, ensuring users are notified in advance of their upcoming vaccine appointment. Compatible with both Android and iOS platforms.
 Version: 1.0
 Author: Soha Mahmoud
 */
@@ -49,101 +49,18 @@ function vr_generate_vaccine_ics_file($first_date, $form_language) {
     $first_vaccine_date = strtotime($first_date);
     $uid = uniqid(); // Generate a unique ID for the filename and UID for the event
     
-
-      // Set language-specific details for second event
-      if ($form_language === 'arabic') {
+    // Set language-specific details
+    if ($form_language === 'arabic') {
         $summary = 'موعد الجرعة الثانية';
-        $description2 = '  تذكير: تبقى شهران حتى موعد التطعيم القادم  ';
+        $description = 'هذا هو التاريخ المحدد للتطعيم القادم.';
     } else {
         $summary = 'Next Vaccine Appointment';
-        $description2 = 'Reminder: Your next vaccination is scheduled in 2 months.';
+        $description = 'This is the scheduled date for the next vaccination.';
     }
-
-      // Set language-specific details for 3th event
-      if ($form_language === 'arabic') {
-        $summary = 'موعد الجرعة الثانية';
-        $description3 = '  تذكير: تبقى شهر حتى موعد التطعيم القادم  ';
-    } else {
-        $summary = 'Next Vaccine Appointment';
-        $description3 = 'Reminder: Your next vaccination is scheduled in 1 months.';
-    }
-
-      // Set language-specific details for 4th event
-      if ($form_language === 'arabic') {
-        $summary = 'موعد الجرعة الثانية';
-        $description4 = '  تذكير: تبقى 14 يوم حتى موعد التطعيم القادم  ';
-    } else {
-        $summary = 'Next Vaccine Appointment';
-        $description4 = 'Reminder: Your next vaccination is scheduled in 14 Days.';
-    }
-
-      // Set language-specific details for 5th event
-      if ($form_language === 'arabic') {
-        $summary = 'موعد الجرعة الثانية';
-        $description5 = '  تذكير: تبقى 3 ايام حتى موعد التطعيم القادم  ';
-    } else {
-        $summary = 'Next Vaccine Appointment';
-        $description5 = 'Reminder: Your next vaccination is scheduled in 3 Days.';
-    }
-
-      // Set language-specific details for 6th event
-      if ($form_language === 'arabic') {
-        $summary = 'موعد الجرعة الثانية';
-        $description6 = '  تذكير: تبقى يوم حتى موعد التطعيم القادم  ';
-    } else {
-        $summary = 'Next Vaccine Appointment';
-        $description6 = 'Reminder: Your next vaccination is scheduled in 1 Day.';
-    }
-
-        // Set language-specific details for first event
-        if ($form_language === 'arabic') {
-            $summary = 'موعد الجرعة الثانية';
-            $description = '  تذكير: تبقى ساعة حتى موعد التطعيم القادم  ';
-        } else {
-            $summary = 'Next Vaccine Appointment';
-            $description = 'Reminder: Your next vaccination is scheduled in 1 Hour.';
-        }
-
-    
     
     // Define event details
     $events = array(
         array(
-            'summary' => $summary,
-            'description' => $description6,
-            'location' => 'Vacsera',
-            'start' => strtotime('+89 days', strtotime($first_date . ' 09:00:00')),
-            'end' => strtotime('+89 days', strtotime($first_date . ' 10:00:00')),
-        ),
-        array(
-            'summary' => $summary,
-            'description' => $description2,
-            'location' => 'Vacsera',
-            'start' => strtotime('+30 days', strtotime($first_date . ' 09:00:00')),
-            'end' => strtotime('+30 days', strtotime($first_date . ' 10:00:00')),
-        ),
-        array(
-            'summary' => $summary,
-            'description' => $description3,
-            'location' => 'Vacsera',
-            'start' => strtotime('+60 days', strtotime($first_date . ' 09:00:00')),
-            'end' => strtotime('+60 days', strtotime($first_date . ' 10:00:00')),
-        ),
-        array(
-            'summary' => $summary,
-            'description' => $description4,
-            'location' => 'Vacsera',
-            'start' => strtotime('+76 days', strtotime($first_date . ' 09:00:00')),
-            'end' => strtotime('+76 days', strtotime($first_date . ' 10:00:00')),
-        ),
-        array(
-            'summary' => $summary,
-            'description' => $description5,
-            'location' => 'Vacsera',
-            'start' => strtotime('+87 days', strtotime($first_date . ' 09:00:00')),
-            'end' => strtotime('+87 days', strtotime($first_date . ' 10:00:00')),
-        ),
-         array(
             'summary' => $summary,
             'description' => $description,
             'location' => 'Vacsera',
@@ -168,7 +85,6 @@ END:STANDARD
 END:VTIMEZONE";
 
     foreach ($events as $event) {
-        $uid = uniqid();
         $start_time = date('Ymd\THis', $event['start']);
         $end_time = date('Ymd\THis', $event['end']);
 
@@ -183,7 +99,35 @@ SUMMARY:" . vr_escape_ics_text($event['summary']) . "
 DESCRIPTION:" . vr_escape_ics_text($event['description']) . "
 LOCATION:" . vr_escape_ics_text($event['location']) . "
 
+BEGIN:VALARM
+TRIGGER:-P2M
+ACTION:DISPLAY
+DESCRIPTION:Reminder 2 months before
+END:VALARM
 
+BEGIN:VALARM
+TRIGGER:-P1M
+ACTION:DISPLAY
+DESCRIPTION:Reminder 1 month before
+END:VALARM
+
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:Reminder 14 days before
+END:VALARM
+
+BEGIN:VALARM
+TRIGGER:-P3D
+ACTION:DISPLAY
+DESCRIPTION:Reminder 3 days before
+END:VALARM
+
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder 1 day before
+END:VALARM
 
 BEGIN:VALARM
 TRIGGER:-PT60M
