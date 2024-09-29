@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Vaccine Reminder
-Description: This plugin allows users to input their vaccine date, automatically generates an ICS file for the next scheduled vaccine, and seamlessly integrates it into the user's calendar. The plugin also includes a built-in reminder system, ensuring users are notified in advance of their upcoming vaccine appointment. Compatible with both Android and iOS platforms.
+Description: This plugin allows users to input their vaccine date, automatically generates an ICS file with 6 events to reminder (Android & IOS).
 Version: 1.0
 Author: Soha Mahmoud
 */
